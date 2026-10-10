@@ -28,7 +28,7 @@ class Simulator:
                 latency_requirement=cfg['latency_req'],
                 packet_loss_requirement=cfg['packet_loss_req']
             )
-            # Create users for this slice
+            # Creating users
             num_users = cfg['base_users']
             for i in range(num_users):
                 user = User(
@@ -46,26 +46,24 @@ class Simulator:
         results = []
 
         for time_step in range(self.duration):
-            # Reset allocations but preserve qos_satisfied from previous step
-            # so the QoS allocator can react to violations
             for s in network.slices.values():
                 s.allocated_bandwidth = 0
                 s.measured_throughput = 0
                 s.measured_latency = 0
                 s.measured_packet_loss = 0
 
-            # Generate traffic demands
+            # traffic_gen here
             demands = traffic_gen.generate(time_step, scenario_name, SLICE_CONFIG)
 
             for slice_type, demand in demands.items():
                 if slice_type in network.slices:
                     network.slices[slice_type].current_demand = demand
 
-            # Allocate resources
+            # resource allocation
             if allocator:
                 allocator.allocate(network)
 
-            # Calculate metrics
+            # calculations
             load_ratio = network.get_load_ratio()
 
             for slice_type, slice_obj in network.slices.items():
