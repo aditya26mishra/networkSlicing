@@ -61,17 +61,17 @@ class Simulator:
 
             # resource allocation
             if allocator:
-                allocator.allocate(network)
+                allocator.allocate(network) 
 
             # calculations
             load_ratio = network.get_load_ratio()
 
             for slice_type, slice_obj in network.slices.items():
-                slice_obj.calculate_metrics(load_ratio)
-                slice_obj.check_qos()
-                slice_obj.record_step(time_step)
+                slice_obj.calculate_metrics(load_ratio) # thoughput, latency, packet loss
+                slice_obj.check_qos() # qos = t / f?
+                slice_obj.record_step(time_step) #result stored here!
 
-                results.append({
+                results.append({ # dictionary form - results stored
                     'time': time_step,
                     'algorithm': allocator.name if allocator else 'None',
                     'scenario': scenario_name,
@@ -86,6 +86,14 @@ class Simulator:
                     ),
                     'qos_satisfied': slice_obj.qos_satisfied
                 })
+
+                # will look something like this!
+                """time	algorithm	slice	demand	allocation	throughput	latency	loss	QoS
+                    0	Static	    eMBB	42.1	    50	    42.1	    15	    0	    ✓
+                    0	Static	    URLLC	11.4	    30	    11.4	    3	    0	    ✓
+                    0	Static	    mMTC	9.3	        20	    9.3	25	    0	    ✓
+                    1	Static	    eMBB	40.8	    50	    40.8	    ...	    ...	    ✓
+                    ...	...	...	...	...	...	...	...	..."""
 
         return pd.DataFrame(results)
 
