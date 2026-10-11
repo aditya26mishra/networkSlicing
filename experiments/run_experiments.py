@@ -1,6 +1,6 @@
 import os
 from simulation.simulator import Simulator
-from visualisation.plots import Visualizer
+from visualization.plots import Visualizer
 from metrics.metrics import generate_summary
 
 def main():
